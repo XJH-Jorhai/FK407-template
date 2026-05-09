@@ -9,6 +9,10 @@ This is a generic firmware template for **STM32F407VETx**, based on STM32CubeMX 
 
 The goal is simple: **start from a known-good baseline that can build, flash, and print over UART, then extend it for your own project**.
 
+The template development and validation are based on the [FanKe Technology STM32F407VET6 Core Board](https://item.taobao.com/item.htm?abbucket=19&id=581847252103)
+
+Of course, the template is not limited to this development board—or even to the F407 series. You can also reuse its workflow and toolchain for development on other microcontrollers.
+
 ## When to use this template
 
 - You want to start a new STM32F4 firmware project without building the CMake/toolchain setup from scratch.
