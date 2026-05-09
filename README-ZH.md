@@ -1,3 +1,4 @@
+🌐 Language: [English](README.md) | [中文](README-zh.md)
 # FK407 STM32CubeMX CMake 模板
 
 本仓库是一个可复用的 STM32F407VETx 固件模板，由 STM32CubeMX 生成并使用 CMake 工具链构建。它包含一个最小化的 USART1 `Hello World` 启动测试、DAPLink/pyOCD 烧录支持，以及工作区本地的 VS Code 任务配置。
