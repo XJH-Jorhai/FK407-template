@@ -1,0 +1,9 @@
+{
+  "cmake.useCMakePresets": "always",
+  "cmake.configureOnOpen": false,
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "cortex-debug.armToolchainPrefix": "arm-none-eabi",
+  "cortex-debug.pyocdPath": "pyocd",
+  "fk407.gdbPath": "arm-none-eabi-gdb",
+  "fk407.pyocdTarget": "stm32f407vetx"
+}

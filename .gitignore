@@ -1,0 +1,30 @@
+# CMake build output
+build/
+cmake-build-*/
+
+# Compiled firmware artifacts
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# Object and dependency files
+*.o
+*.obj
+*.d
+*.dep
+
+# IDE and editor local state
+.vs/
+.idea/
+*.code-workspace
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+
+# Python/tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/

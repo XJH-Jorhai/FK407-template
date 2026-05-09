@@ -1,0 +1,2 @@
+dap_protocol: swd
+cmsis_dap.prefer_v1: true

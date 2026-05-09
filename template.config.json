@@ -1,0 +1,16 @@
+{
+  "projectName": "FK407-template",
+  "buildPreset": "Debug",
+  "cmakePath": "cmake",
+  "armToolchainBin": "",
+  "pyocdPath": "pyocd",
+  "pyocdTarget": "stm32f407vetx",
+  "pyocdOptions": ["-O", "cmsis_dap.prefer_v1=true"],
+  "serial": {
+    "port": "COM8",
+    "baudRate": 115200,
+    "dataBits": 8,
+    "parity": "None",
+    "stopBits": "One"
+  }
+}
