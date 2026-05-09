@@ -28,27 +28,71 @@
 - 示例输出: `build/Debug/FK407-template.elf`
 - 主配置文件: `template.config.json`
 
-## 快速开始（使用者视角）
+## 快速开始
 
-### 1) 安装依赖
+你完全可以借助 Codex 等工具完成大部分开发工作，你只需要正确连接开发板即可。如果你不清楚如何连接，也可以让这些工具一步步指导你。
+
+不过，如果完全没有单片机开发经验或相关基础知识，在实际操作过程中仍然可能遇到一些问题。因此，建议至少具备一点基础认知，而这个模板正好可以作为你入门嵌入式开发的第一个实践项目。
+
+### 1) 连接开发板
+
+本模板默认使用：
+
+* SWD 下载与调试
+* USART 串口日志输出
+
+你需要准备：
+
+* 一个 SWD 调试器（推荐 DAPlink，也支持 ST-Link）
+* 一个 USB 转串口模块（部分调试器自带串口功能）
+
+#### SWD 连接
+
+将开发板引脚连接到 SWD 调试器：
+
+| 开发板引脚       | 调试器引脚       |
+| ----------- | ----------- |
+| SWDIO       | SWDIO       |
+| SWCLK / SWC | SWCLK       |
+| 3.3V / VCC  | VTref / 3V3 |
+| GND         | GND         |
+
+> 本工程优先推荐使用 DAPlink。
+
+#### USART 串口连接
+
+将开发板串口连接到 USB 转串口模块：
+
+| 开发板引脚 | 串口模块引脚 |
+| ----- | ------ |
+| TX    | RX     |
+| RX    | TX     |
+| GND   | GND    |
+
+> 注意 TX 与 RX 需要交叉连接。
+> 部分调试器（如 DAPlink）可能已经集成串口功能，无需额外串口模块。
+
+---
+
+### 2) 安装依赖
 
 至少需要：
 
-- CMake 3.22+
-- Ninja
-- Arm GNU Toolchain
-- Python 3
-- pyOCD
+* CMake 3.22+
+* Ninja
+* Arm GNU Toolchain
+* Python 3
+* pyOCD
 
-### 2) 修改本机配置
+### 3) 修改本机配置
 
 克隆后先编辑 `template.config.json`，重点填写：
 
-- `armToolchainBin`（如 PATH 中已有正确工具链可留空）
-- `pyocdTarget`（本模板默认 `stm32f407vetx`）
-- `serial.port`（如 `COM8`）
+* `armToolchainBin`（如 PATH 中已有正确工具链可留空）
+* `pyocdTarget`（本模板默认 `stm32f407vetx`）
+* `serial.port`（如 `COM8`）
 
-### 3) 配置并编译
+### 4) 配置并编译
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 check-tools
@@ -56,7 +100,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 conf
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 build
 ```
 
-### 4) 下载到板子
+### 5) 下载到板子
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 probe
@@ -64,13 +108,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 flas
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 reset
 ```
 
-### 5) 串口验证（可选）
+### 6) 串口验证（可选）
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 serial-test
 ```
 
 若连接正确，应看到周期性 `Hello World` 输出。
+
 
 ## 如何让 Agent 基于模板初始化你的工程
 
