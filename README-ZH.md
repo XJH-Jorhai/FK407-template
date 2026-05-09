@@ -1,96 +1,50 @@
-🌐 Language: [English](README.md) | [中文](README-zh.md)
-# FK407 STM32CubeMX CMake 模板
+🌐 Language: [English](README.md) | [中文](README-ZH.md)
+# FK407 STM32CubeMX CMake Template
 
-本仓库是一个可复用的 STM32F407VETx 固件模板，由 STM32CubeMX 生成并使用 CMake 工具链构建。它包含一个最小化的 USART1 `Hello World` 启动测试、DAPLink/pyOCD 烧录支持，以及工作区本地的 VS Code 任务配置。
+这是一个面向 **STM32F407VETx** 的通用固件模板，基于 STM32CubeMX + CMake + Ninja，开箱可用于：
 
-该模板有意不绑定到某一台电脑。用户相关的配置值，例如工具路径、pyOCD 目标名称和串口号，都集中在 `template.config.json` 中。
+- 生成并构建裸机工程（`arm-none-eabi-*`）
+- 使用 DAPLink/CMSIS-DAP + pyOCD 下载和复位
+- 通过 USART1（PA9/PA10, 115200 8N1）做最小串口连通性验证
 
-## 项目信息
+模板的目标是：**让你快速从一个可编译、可下载、可串口验证的基线开始，再按你的项目需求扩展**。
 
-- MCU：STM32F407VETx
-- 构建系统：基于 Ninja 的 CMake Presets
-- 工具链：用于裸机开发的 Arm GNU Toolchain，即 `arm-none-eabi-*`
-- 调试/烧录探针：通过 pyOCD 使用 DAPLink / CMSIS-DAP
-- 固件入口：`Core/Src/main.c`
-- UART 测试：USART1，PA9 TX，PA10 RX，115200 8N1
-- 调试输出：`build/Debug/FK407-template.elf`
+## 这个模板适合什么场景
 
-## 安装前置工具
+- 你要新建 STM32F4 固件项目，但不想从零配工具链和 CMake。
+- 你希望团队成员在不同电脑上，通过 `template.config.json` 填写本机路径后即可复用同一模板。
+- 你希望后续让 Agent 在这个基线上自动化完成初始化、外设改造或代码生成。
 
-构建前请先安装以下工具：
+## 模板包含什么
 
-- CMake 3.22 或更新版本
+- MCU: `STM32F407VETx`
+- Build: CMake Presets + Ninja
+- Toolchain: Arm GNU Toolchain
+- Flash/Debug: pyOCD（默认 target: `stm32f407vetx`）
+- 示例输出: `build/Debug/FK407-template.elf`
+- 主配置文件: `template.config.json`
+
+## 快速开始（使用者视角）
+
+### 1) 安装依赖
+
+至少需要：
+
+- CMake 3.22+
 - Ninja
-- Arm GNU Toolchain，包含 `arm-none-eabi-gcc`、`arm-none-eabi-gdb`、`arm-none-eabi-objcopy` 和 `arm-none-eabi-size`
-- Python 3.x
-- pyOCD：`python -m pip install -U pyocd`
-- VS Code，推荐扩展：
-  - `ms-vscode.cpptools`
-  - `ms-vscode.cmake-tools`
-  - `marus25.cortex-debug`
-  - 可选：`ms-vscode.vscode-serial-monitor`
+- Arm GNU Toolchain
+- Python 3
+- pyOCD
 
-验证基础工具：
+### 2) 修改本机配置
 
-```powershell
-cmake --version
-ninja --version
-arm-none-eabi-gcc --version
-arm-none-eabi-gdb --version
-python --version
-pyocd --version
-```
+克隆后先编辑 `template.config.json`，重点填写：
 
-如果 `arm-none-eabi-gcc` 解析到了旧的厂商 SDK 副本，请在 `template.config.json` 中设置 `armToolchainBin`，不要依赖 PATH。
+- `armToolchainBin`（如 PATH 中已有正确工具链可留空）
+- `pyocdTarget`（本模板默认 `stm32f407vetx`）
+- `serial.port`（如 `COM8`）
 
-## 配置此模板
-
-克隆后编辑 `template.config.json`：
-
-```json
-{
-  "projectName": "FK407-template",
-  "buildPreset": "Debug",
-  "cmakePath": "cmake",
-  "armToolchainBin": "",
-  "pyocdPath": "pyocd",
-  "pyocdTarget": "stm32f407vetx",
-  "pyocdOptions": ["-O", "cmsis_dap.prefer_v1=true"],
-  "serial": {
-    "port": "COM8",
-    "baudRate": 115200,
-    "dataBits": 8,
-    "parity": "None",
-    "stopBits": "One"
-  }
-}
-```
-
-重要字段说明：
-
-- `armToolchainBin`：如果正确的 Arm GNU Toolchain 已经位于 PATH 的最前面，则保持为空。当安装了多个工具链时，将其设置为绝对路径，例如 `C:\\Program Files\\Arm GNU Toolchain arm-none-eabi\\bin`。
-- `pyocdPath`：使用 PATH 中的 `pyocd`，或者设置为 pyOCD 的绝对路径。
-- `pyocdTarget`：pyOCD 目标名称。本模板使用 `stm32f407vetx`。
-- `pyocdOptions`：对于在 Windows 上通过 CMSIS-DAP v1/HID 工作更稳定的 DAPLink 探针，保留 `cmsis_dap.prefer_v1=true`。
-- `serial.port`：设置为本机 USB-UART 端口，例如 `COM8`。
-
-如果在 CMake 已经配置过项目之后修改了 `armToolchainBin`，请删除 `build/Debug` 并重新配置，避免 CMake 缓存旧的编译器路径。
-
-## 安装 MCU Pack
-
-查找并安装该 MCU 对应的 pyOCD CMSIS-Pack：
-
-```powershell
-pyocd pack find STM32F407VETx
-pyocd pack install STM32F407VETx
-pyocd list --targets --name stm32f407vetx
-```
-
-本地的 `pyocd.yaml` 保存了适用于该系列开发板的 DAPLink/SWD 选项。目标型号本身通过 `template.config.json` 传入。
-
-## 构建
-
-推荐使用辅助命令：
+### 3) 配置并编译
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 check-tools
@@ -98,102 +52,58 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 conf
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 build
 ```
 
-当 PATH 已经正确配置时，也可以直接使用原始 CMake 命令：
-
-```powershell
-cmake --preset Debug
-cmake --build --preset Debug
-```
-
-预期输出：
-
-```text
-build/Debug/FK407-template.elf
-```
-
-## 使用 DAPLink 烧录
-
-通过 DAPLink 连接开发板，并验证探针：
+### 4) 下载到板子
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 probe
-```
-
-烧录当前 Debug ELF：
-
-```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 flash
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 reset
 ```
 
-等效的原始命令：
-
-```powershell
-pyocd flash -O cmsis_dap.prefer_v1=true --target stm32f407vetx build\Debug\FK407-template.elf
-```
-
-## 串口 Hello World 测试
-
-固件会通过 USART1 每秒发送一次 `Hello World\r\n`。更新 `template.config.json` 中的 `serial.port` 后运行：
+### 5) 串口验证（可选）
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/template-task.ps1 serial-test
 ```
 
-预期输出：
+若连接正确，应看到周期性 `Hello World` 输出。
+
+## 如何让 Agent 基于模板初始化你的工程
+
+你可以直接给 Agent 一段需求，让它在这个模板上完成初始化。建议一次说清以下信息：
+
+- 新工程名（projectName）
+- 目标 MCU（若不是 STM32F407VETx）
+- 你要启用的外设（UART/SPI/I2C/CAN/USB 等）
+- 调试下载方式（DAPLink/ST-Link、pyOCD target）
+- 串口测试端口与波特率
+
+示例指令：
 
 ```text
-Hello World
-Hello World
-Hello World
+请基于这个模板初始化一个新工程：
+1) projectName 改为 MotorCtrl-F407
+2) 保留 DAPLink + pyOCD，target 使用 stm32f407vetx
+3) 开启 USART1(115200) 和 SPI1
+4) 生成后完成 configure + build，确认 elf 产物存在
+5) 更新 README，写清楚如何编译和下载
 ```
 
-如果没有输出，请检查 UART TX/RX 是否交叉连接、是否共地、COM 端口是否选择正确、波特率是否正确，以及 USB-UART 适配器是否连接到 PA9/PA10。
+如果你需要，Agent 也可以继续帮你做：
 
-如果辅助脚本提示 COM 端口无法打开，请先关闭其他串口终端。常见占用者包括 VS Code Serial Monitor、厂商串口桥接工具、PuTTY、Tera Term 或另一个 PowerShell 会话。
+- 增加新的源文件与模块化目录
+- 调整 CMake 结构
+- 添加 VS Code task / launch 配置
+- 增加最小功能自测代码（比如串口回显、SPI 回环）
 
-## VS Code
+## 目录速览
 
-在 VS Code 中打开此文件夹，并使用以下任务：
+- `FK407-template.ioc`：CubeMX 工程源
+- `template.config.json`：本机可编辑配置
+- `tools/template-task.ps1`：常用任务入口
+- `Core/`、`Drivers/`：固件源码与 HAL/CMSIS
+- `cmake/`：工具链与 CMake 辅助脚本
 
-- `Check Tools`
-- `Probe DAPLink`
-- `Configure Debug`
-- `Build Debug`
-- `Flash Debug`
-- `Serial Test`
+---
 
-这些任务会调用 `tools/template-task.ps1`，因此会使用 `template.config.json`。
-
-自动的 CMake 打开即配置功能被有意禁用。请使用 `Configure Debug`，这样辅助脚本可以在 CMake 选择编译器之前应用 `template.config.json`。
-
-Cortex-Debug 启动配置为 `Debug STM32 via DAPLink`。它读取：
-
-- 目标来自 `.vscode/settings.json` 中的 `fk407.pyocdTarget`
-- GDB 路径来自 `.vscode/settings.json` 中的 `fk407.gdbPath`
-
-如果 Cortex-Debug 无法从 PATH 中找到 GDB，请将 `fk407.gdbPath` 设置为 `arm-none-eabi-gdb` 的绝对路径。
-
-## 固件自定义规则
-
-大多数 CubeMX 生成的文件都可以重新生成。尽可能将应用代码放在 `/* USER CODE BEGIN ... */` 和 `/* USER CODE END ... */` 块中。
-
-适合放置用户代码的位置：
-
-- `Core/Src/main.c`：用于启动逻辑和主循环
-- `Core/Src/<peripheral>.c` 的用户代码块：用于外设相关钩子
-- `Core/Inc/<peripheral>.h` 的用户代码块：用于声明
-- 顶层 `CMakeLists.txt`：用于额外的用户自有源文件
-
-除非你明确接受 CubeMX 可能覆盖该文件，否则请避免手动编辑 `cmake/stm32cubemx/CMakeLists.txt`。
-
-## 当前验证快照
-
-在最初的 bring-up 电脑上，该模板使用以下环境验证通过：
-
-- Arm GNU Toolchain 14.2.1
-- pyOCD 0.44.0
-- DAPLink CMSIS-DAP 探针
-- COM8，115200 8N1
-
-成功的串口输出为重复的 `Hello World` 行。其他用户不需要使用完全相同的工具版本，但应使用较新的 Arm GNU Toolchain，并为 `STM32F407VETx` 安装正确的 pyOCD pack。
+如果你只想“尽快开始”，按“快速开始”执行即可；如果你要“快速定制”，把需求直接交给 Agent，让它在此模板上自动完成初始化和首轮验证。
